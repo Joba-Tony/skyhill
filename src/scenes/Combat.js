@@ -2,6 +2,7 @@
 import { COLORS, txt, button, sprite, panel, SFX, hex } from '../ui.js';
 import { MONSTERS, ITEMS, BALANCE } from '../data.js';
 import { game, RNG } from '../state.js';
+import { scaleMonster, playerHitChance, monsterHitChance, playerDamage, monsterDamage } from '../combat.js';
 
 export class Combat extends Phaser.Scene {
   constructor() { super('Combat'); }
@@ -14,14 +15,7 @@ export class Combat extends Phaser.Scene {
     this.busy = false;
 
     // 怪物运行时实例（按深度轻度成长）
-    const base = MONSTERS[game.currentRoom.monsterId];
-    const f = 1 + game.descended * 0.012;
-    this.mon = {
-      ...base,
-      maxHp: Math.round(base.hp * f),
-      hp: Math.round(base.hp * f),
-      dmg: [Math.round(base.dmg[0] * (1 + game.descended * 0.006)), Math.round(base.dmg[1] * (1 + game.descended * 0.008))],
-    };
+    this.mon = scaleMonster(game.currentRoom.monsterId, game.descended);
 
     txt(this, W / 2, 36, '⚔  战 斗', 28, hex(COLORS.gold)).setOrigin(0.5);
 
@@ -102,9 +96,8 @@ export class Combat extends Phaser.Scene {
 
   playerAttack() {
     const exhausted = game.spendStamina(3);
-    const hitChance = Phaser.Math.Clamp(0.6 + (game.attackAcc - this.mon.eva) * 0.04, 0.15, 0.95);
-    if (RNG.chance(hitChance)) {
-      const dmg = Math.max(1, game.rollDamage() - this.mon.armor);
+    if (RNG.chance(playerHitChance(game, this.mon))) {
+      const dmg = playerDamage(game, this.mon);
       this.mon.hp -= dmg;
       SFX.hit();
       this.shake(this.monSprite);
@@ -122,10 +115,8 @@ export class Combat extends Phaser.Scene {
   // ---------- 怪物回合 ----------
   monsterTurn() {
     if (!game.alive) return this.defeat();
-    const hitChance = Phaser.Math.Clamp(0.55 + (this.mon.acc - game.evasion) * 0.04, 0.1, 0.92);
-    if (RNG.chance(hitChance)) {
-      let dmg = Math.max(1, RNG.int(this.mon.dmg[0], this.mon.dmg[1]) - game.defense);
-      if (this.defending) dmg = Math.ceil(dmg / 2);
+    if (RNG.chance(monsterHitChance(game, this.mon))) {
+      const dmg = monsterDamage(game, this.mon, this.defending);
       game.hp = Phaser.Math.Clamp(game.hp - dmg, 0, game.maxHp);
       SFX.hurt();
       this.cameras.main.shake(120, 0.006);

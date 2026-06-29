@@ -35,14 +35,14 @@ export const CLASSES = [
   {
     id: 'engineer', name: '工程师', frame: FRAMES.engineer,
     desc: '高智力。自带材料与合成天赋，能把废料变装备。',
-    stats: { maxHp: 90, maxStamina: 90, str: 4, acc: 6, dex: 5, int: 9 },
+    stats: { maxHp: 100, maxStamina: 90, str: 4, acc: 7, dex: 5, int: 9 },
     weapon: 'dagger',
     items: [['scrap', 4], ['chem', 2], ['ration', 1]],
   },
   {
     id: 'athlete', name: '运动员', frame: FRAMES.athlete,
     desc: '高敏捷与体力。行动消耗低、闪避高、逃跑成功率高。',
-    stats: { maxHp: 100, maxStamina: 120, str: 6, acc: 7, dex: 9, int: 4 },
+    stats: { maxHp: 95, maxStamina: 110, str: 5, acc: 7, dex: 8, int: 4 },
     weapon: 'dagger',
     items: [['energy', 2], ['ration', 1]],
   },
@@ -64,7 +64,7 @@ export const ITEMS = {
   // 护具
   shield:     { name: '防暴盾', type: 'armor', defense: 3, frame: FRAMES.shield },
   // 消耗品（effect 在 state.useItem 中处理）
-  medkit:  { name: '医疗包',   type: 'consumable', frame: FRAMES.potRed,   heal: 45 },
+  medkit:  { name: '医疗包',   type: 'consumable', frame: FRAMES.potRed,   heal: 50 },
   energy:  { name: '能量饮料', type: 'consumable', frame: FRAMES.potBlue,  stamina: 45 },
   ration:  { name: '罐头食物', type: 'consumable', frame: FRAMES.potGreen, hunger: -35, heal: 5 },
   meal:    { name: '热食',     type: 'consumable', frame: FRAMES.potGreen, hunger: -55, heal: 12, stamina: 15 },
@@ -91,12 +91,12 @@ export const MONSTERS = {
   rat:    { name: '变异鼠',   frame: FRAMES.rat,    tier: 1, hp: 14,  dmg: [2, 5],   acc: 5, eva: 4, armor: 0, xp: 4 },
   slime:  { name: '毒黏怪',   frame: FRAMES.slime,  tier: 1, hp: 20,  dmg: [3, 6],   acc: 4, eva: 1, armor: 0, xp: 6, poison: true },
   hound:  { name: '变异犬',   frame: FRAMES.hound,  tier: 2, hp: 26,  dmg: [4, 8],   acc: 7, eva: 6, armor: 0, xp: 9 },
-  bug:    { name: '装甲虫',   frame: FRAMES.bug,    tier: 2, hp: 32,  dmg: [3, 7],   acc: 5, eva: 2, armor: 3, xp: 10 },
-  ghoul:  { name: '食尸鬼',   frame: FRAMES.ghoul,  tier: 3, hp: 40,  dmg: [6, 11],  acc: 6, eva: 3, armor: 1, xp: 14 },
-  brute:  { name: '狂暴者',   frame: FRAMES.brute,  tier: 3, hp: 56,  dmg: [8, 14],  acc: 6, eva: 2, armor: 1, xp: 18 },
-  imp:    { name: '恶魔',     frame: FRAMES.imp,    tier: 4, hp: 46,  dmg: [7, 13],  acc: 8, eva: 7, armor: 0, xp: 22, poison: true },
-  golem:  { name: '石魔',     frame: FRAMES.golem,  tier: 4, hp: 82,  dmg: [10, 16], acc: 5, eva: 0, armor: 5, xp: 28 },
-  mutant: { name: '变异首领', frame: FRAMES.mutant, tier: 5, hp: 140, dmg: [12, 20], acc: 8, eva: 4, armor: 3, xp: 60, boss: true },
+  bug:    { name: '装甲虫',   frame: FRAMES.bug,    tier: 2, hp: 30,  dmg: [3, 7],   acc: 5, eva: 2, armor: 3, xp: 10 },
+  ghoul:  { name: '食尸鬼',   frame: FRAMES.ghoul,  tier: 3, hp: 38,  dmg: [6, 11],  acc: 6, eva: 3, armor: 1, xp: 14 },
+  brute:  { name: '狂暴者',   frame: FRAMES.brute,  tier: 3, hp: 52,  dmg: [8, 13],  acc: 6, eva: 2, armor: 1, xp: 18 },
+  imp:    { name: '恶魔',     frame: FRAMES.imp,    tier: 4, hp: 44,  dmg: [7, 12],  acc: 8, eva: 7, armor: 0, xp: 22, poison: true },
+  golem:  { name: '石魔',     frame: FRAMES.golem,  tier: 4, hp: 72,  dmg: [9, 15],  acc: 5, eva: 0, armor: 5, xp: 28 },
+  mutant: { name: '变异首领', frame: FRAMES.mutant, tier: 5, hp: 125, dmg: [11, 18], acc: 8, eva: 4, armor: 3, xp: 60, boss: true },
 };
 
 // 按「已下降层数」划分怪物出现池

@@ -1,6 +1,8 @@
 // main.js — Phaser 游戏入口
 import { COLORS } from './ui.js';
-import { game } from './state.js';
+import { game, GameState, RNG, classById } from './state.js';
+import * as Data from './data.js';
+import * as CombatMath from './combat.js';
 import { Boot } from './scenes/Boot.js';
 import { Menu } from './scenes/Menu.js';
 import { ClassSelect } from './scenes/ClassSelect.js';
@@ -28,4 +30,5 @@ const config = {
 
 const phaserGame = new Phaser.Game(config);
 phaserGame.gameState = game; // 便于调试：window 上可访问
-window.__SKYHILL__ = { game, phaserGame };
+// 暴露给调试 / 平衡模拟器
+window.__SKYHILL__ = { game, phaserGame, GameState, RNG, classById, Data, CombatMath };

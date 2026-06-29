@@ -175,7 +175,7 @@ export class GameState {
   get defense() { return this.armorId ? (ITEMS[this.armorId].defense || 0) : 0; }
   rollDamage() {
     const w = this.weapon;
-    return RNG.int(w.dmg[0], w.dmg[1]) + Math.floor(this.str / 2);
+    return RNG.int(w.dmg[0], w.dmg[1]) + Math.round(this.str * 0.6);
   }
   get attackAcc() { return this.acc + (this.weapon.acc || 0); }
   get evasion() { return this.dex; }
