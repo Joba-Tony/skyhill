@@ -34,3 +34,10 @@ const phaserGame = new Phaser.Game(config);
 phaserGame.gameState = game; // 便于调试：window 上可访问
 // 暴露给调试 / 平衡模拟器
 window.__SKYHILL__ = { game, phaserGame, GameState, RNG, classById, Data, CombatMath };
+
+// 兜底：布局变化时刷新缩放，避免指针坐标错位
+const refreshScale = () => { try { phaserGame.scale.refresh(); } catch (e) {} };
+window.addEventListener('resize', refreshScale);
+window.addEventListener('orientationchange', refreshScale);
+window.addEventListener('load', refreshScale);
+document.addEventListener('visibilitychange', refreshScale);
