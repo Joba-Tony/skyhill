@@ -48,12 +48,12 @@ export function makeHUD(scene, game) {
 
   function refresh() {
     if (icon) icon.setFrame(game.frame);
-    name.setText(game.className);
+    name.setText(`${game.className}  Lv${game.level}${game.pendingPerks > 0 ? ' ⭐' : ''}`);
     const wf = ITEMS[game.weaponId]?.frame ?? -1;
     if (weaponIcon) { if (wf >= 0) { weaponIcon.setFrame(wf).setVisible(true); } else weaponIcon.setVisible(false); }
     weaponTxt.setText(`${ITEMS[game.weaponId]?.name || '徒手'}${game.armorId ? ' + ' + ITEMS[game.armorId].name : ''}`);
     floorTxt.setText(`${game.floor} 层`);
-    dayTxt.setText(`第 ${game.day} 天 · 已下降 ${game.descended} 层`);
+    dayTxt.setText(`第 ${game.day} 天 · 已下降 ${game.descended} 层 · 经验 ${game.xp}/${game.xpNext}`);
     setBar(hpBar, game.hp, game.maxHp);
     setBar(stBar, game.stamina, game.maxStamina);
     setBar(hgBar, game.hunger, 100, true);

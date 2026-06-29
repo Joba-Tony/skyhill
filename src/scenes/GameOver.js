@@ -23,7 +23,7 @@ export class GameOver extends Phaser.Scene {
 
     // 战绩
     const stats = [
-      `职业：${game.className}`,
+      `职业：${game.className}　等级 Lv${game.level}`,
       `下降层数：${game.descended} / ${100 - 1}`,
       `抵达楼层：${game.floor} 层`,
       `存活天数：${game.day} 天`,

@@ -190,9 +190,10 @@ export class Combat extends Phaser.Scene {
     this.busy = true;
     game.currentRoom.defeated = true;
     game.kills += 1;
+    const ups = game.addXp(this.mon.xp);
     SFX.loot();
     this.tweens.add({ targets: this.monSprite, alpha: 0, angle: 90, y: '+=20', duration: 400 });
-    this.log(`✔ 你击败了 ${this.mon.name}！`);
+    this.log(`✔ 你击败了 ${this.mon.name}！经验 +${this.mon.xp}` + (ups > 0 ? `，升到 Lv${game.level}！` : ''));
     game.save();
     this.actionUI.removeAll(true);
     button(this, this.scale.width / 2, 540, 280, 48, '继续', () => this.endBattle(),

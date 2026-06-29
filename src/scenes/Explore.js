@@ -1,7 +1,7 @@
 // Explore — 逐层探索：生成房间事件，处理搜刮 / 上锁房 / 特殊房 / 进入战斗
 import { COLORS, txt, button, sprite, panel, SFX, hex } from '../ui.js';
 import {
-  FRAMES, ITEMS, BALANCE, LOOT_TABLE, RARE_LOOT,
+  FRAMES, ITEMS, BALANCE, LOOT_TABLE, RARE_LOOT, BOSS_FLOORS,
   roomWeightsFor, monsterPoolFor, MONSTERS,
 } from '../data.js';
 import { game, RNG } from '../state.js';
@@ -34,19 +34,44 @@ export class Explore extends Phaser.Scene {
     this.render();
 
     // 战斗 / 覆盖层返回
-    this.events.on('resume', () => { this.hud.refresh(); this.render(); });
+    this.events.on('resume', () => { this.hud.refresh(); this.handlePostCombat(); });
 
     game.save();
   }
 
+  // 战斗/覆盖层返回后：Boss 掉落、触发升级
+  handlePostCombat() {
+    const r = game.currentRoom;
+    if (r && r.type === 'monster' && r.boss && r.defeated && !r.bossLooted) {
+      r.bossLooted = true;
+      if (!game.bossesDone.includes(game.descended)) game.bossesDone.push(game.descended);
+      const loot = this.rollRare(4);
+      loot.push([RNG.pick(['sword', 'axe', 'greatsword', 'hammer']), 1]);
+      SFX.loot();
+      this.log('👑 Boss 掉落了大量战利品！');
+      this.giveLoot(loot);
+      game.save();
+    }
+    this.render();
+    if (game.pendingPerks > 0) this.openLevelUp();
+  }
+
+  openLevelUp() { this.scene.pause(); this.scene.launch('LevelUp', { from: 'Explore' }); }
+  openShop() { this.scene.pause(); this.scene.launch('Shop', { from: 'Explore' }); }
+
   // ---------- 房间生成 ----------
   genRoom() {
+    // 里程碑 Boss：必出
+    const bossId = BOSS_FLOORS[game.descended];
+    if (bossId && !game.bossesDone.includes(game.descended)) {
+      return { type: 'monster', monsterId: bossId, boss: true, defeated: false, searched: false };
+    }
     const type = RNG.weighted(roomWeightsFor(game.descended));
     if (type === 'monster') {
       return { type, monsterId: RNG.pick(monsterPoolFor(game.descended)), defeated: false, searched: false };
     }
     if (type === 'special') {
-      return { type, sub: RNG.weighted({ rest: 4, cache: 4, trap: 3 }), done: false };
+      return { type, sub: RNG.weighted({ rest: 4, cache: 4, trap: 3, trader: 3 }), done: false };
     }
     return { type, searched: false, opened: false };
   }
@@ -88,13 +113,19 @@ export class Explore extends Phaser.Scene {
     else if (r.type === 'locked') { title = '上锁的房间'; desc = '门被反锁了。用铁管也许能撬开，里面应该有好东西。'; centerFrame = r.opened ? FRAMES.chestOpen : FRAMES.doorLocked; }
     else if (r.type === 'monster') {
       const m = MONSTERS[r.monsterId];
-      title = r.defeated ? '战斗结束' : `遭遇：${m.name}`;
-      desc = r.defeated ? '怪物已被击倒，搜刮它的残骸吧。' : `一只${m.name}挡住了去路！`;
+      if (r.boss) {
+        title = r.defeated ? '👑 Boss 已被击败' : `⚠ Boss：${m.name}`;
+        desc = r.defeated ? '强敌倒下，搜刮战利品吧。' : `层主${m.name}发出了咆哮！这是场硬仗。`;
+      } else {
+        title = r.defeated ? '战斗结束' : `遭遇：${m.name}`;
+        desc = r.defeated ? '怪物已被击倒，搜刮它的残骸吧。' : `一只${m.name}挡住了去路！`;
+      }
       centerFrame = r.defeated ? FRAMES.chestClosed : m.frame;
     }
     else if (r.type === 'special') {
       if (r.sub === 'rest') { title = '安全角落'; desc = '一处可以喘口气的地方，稍作休息恢复状态。'; centerFrame = FRAMES.bed; }
       else if (r.sub === 'cache') { title = '隐藏缓存'; desc = '幸存者留下的补给箱，里头是稀有物资！'; centerFrame = FRAMES.chestClosed; }
+      else if (r.sub === 'trader') { title = '流浪商人'; desc = '一个幸存的商人。可以用材料换取装备与补给。'; centerFrame = FRAMES.vendor; }
       else { title = '陷阱房'; desc = '机关已经触发。快离开这里。'; centerFrame = FRAMES.trap; }
     }
 
@@ -132,6 +163,7 @@ export class Explore extends Phaser.Scene {
     if (r.type === 'monster' && r.defeated && !r.searched) acts.push(['💀 搜刮战利品', () => this.search('monster')]);
     if (r.type === 'special' && r.sub === 'rest' && !r.done) acts.push(['😮‍💨 休息', () => this.rest()]);
     if (r.type === 'special' && r.sub === 'cache' && !r.done) acts.push(['🎁 打开缓存', () => this.openCache()]);
+    if (r.type === 'special' && r.sub === 'trader') acts.push(['🛒 交易', () => this.openShop()]);
 
     // 通用行动
     if (cleared || r.type !== 'monster') acts.push(['⬇ 继续下楼', () => this.goDeeper(), { fill: COLORS.accentDim, hover: COLORS.accent }]);

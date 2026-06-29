@@ -9,14 +9,14 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 // 按已下降层数对怪物进行轻度成长，返回运行时实例
 export function scaleMonster(id, descended) {
   const base = MONSTERS[id];
-  const f = 1 + descended * 0.007;
+  const f = 1 + descended * 0.010;
   return {
     ...base, id,
     maxHp: Math.round(base.hp * f),
     hp: Math.round(base.hp * f),
     dmg: [
-      Math.round(base.dmg[0] * (1 + descended * 0.006)),
-      Math.round(base.dmg[1] * (1 + descended * 0.008)),
+      Math.round(base.dmg[0] * (1 + descended * 0.008)),
+      Math.round(base.dmg[1] * (1 + descended * 0.011)),
     ],
   };
 }

@@ -87,7 +87,8 @@ for (iter = 0; iter < 120; iter++) {
     await sleep(450);
     continue;
   }
-  if (sc.includes('Inventory') || sc.includes('Craft')) { await tap('关闭'); await sleep(300); continue; }
+  if (sc.includes('LevelUp')) { (await tap('力量') || await tap('命中') || await tap('生命')); await sleep(250); continue; }
+  if (sc.includes('Inventory') || sc.includes('Craft') || sc.includes('Shop')) { await tap('关闭'); await sleep(300); continue; }
   if (top === 'Explore') {
     if (await tap('战斗')) { await sleep(500); continue; }
     // 优先解锁/搜刮/特殊，再下楼

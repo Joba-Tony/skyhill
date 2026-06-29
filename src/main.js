@@ -11,6 +11,8 @@ import { Explore } from './scenes/Explore.js';
 import { Combat } from './scenes/Combat.js';
 import { Inventory } from './scenes/Inventory.js';
 import { Craft } from './scenes/Craft.js';
+import { LevelUp } from './scenes/LevelUp.js';
+import { Shop } from './scenes/Shop.js';
 import { GameOver } from './scenes/GameOver.js';
 
 const config = {
@@ -25,7 +27,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Boot, Menu, ClassSelect, Base, Explore, Combat, Inventory, Craft, GameOver],
+  scene: [Boot, Menu, ClassSelect, Base, Explore, Combat, Inventory, Craft, LevelUp, Shop, GameOver],
 };
 
 const phaserGame = new Phaser.Game(config);

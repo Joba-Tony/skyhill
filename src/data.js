@@ -7,7 +7,7 @@
 // ---- 精灵帧号（见 README 的帧索引图）----
 export const FRAMES = {
   // 角色
-  guard: 96, engineer: 100, athlete: 99,
+  guard: 96, engineer: 100, athlete: 99, vendor: 85,
   // 环境/家具
   floor: 30, floorAlt: 13, wall: 2, wall2: 3,
   doorClosed: 45, doorLocked: 33, doorOpen: 47,
@@ -81,8 +81,31 @@ export const RECIPES = [
   { id: 'knife',  out: ['knife', 1],  station: 'workbench', cost: [['scrap', 3]],            desc: '磨一把锋利尖刀' },
   { id: 'shield', out: ['shield', 1], station: 'workbench', cost: [['scrap', 4]],            desc: '焊一面防暴盾' },
   { id: 'medkit', out: ['medkit', 1], station: 'workbench', cost: [['chem', 2]],             desc: '用化学剂配制医疗包' },
+  { id: 'sword',  out: ['sword', 1],  station: 'workbench', cost: [['scrap', 5]],            desc: '打造一把趁手砍刀' },
   { id: 'meal',   out: ['meal', 1],   station: 'stove',     cost: [['ration', 1], ['chem', 1]], desc: '加热罐头做成热食' },
   { id: 'energy', out: ['energy', 1], station: 'stove',     cost: [['chem', 2]],             desc: '调一瓶提神能量饮料' },
+];
+
+// ---- 升级强化（每次升级可选其一）----
+export const PERKS = [
+  { id: 'str', name: '力量 +2',     desc: '近战伤害提升' },
+  { id: 'acc', name: '命中 +2',     desc: '攻击更易命中' },
+  { id: 'dex', name: '敏捷 +2',     desc: '闪避 / 逃跑 / 省体力' },
+  { id: 'hp',  name: '最大生命 +15', desc: '上限提升并立即回复 15' },
+  { id: 'sta', name: '最大体力 +15', desc: '上限提升并立即回复 15' },
+];
+
+// ---- 里程碑 Boss（按已下降层数触发，必出且掉落丰厚）----
+export const BOSS_FLOORS = { 33: 'brute', 66: 'golem', 98: 'mutant' };
+
+// ---- 商人以物易物（用材料换装备/补给，无失败）----
+export const TRADES = [
+  { out: ['medkit', 1], cost: [['scrap', 3]] },
+  { out: ['energy', 1], cost: [['chem', 1]] },
+  { out: ['meal', 1],   cost: [['ration', 1], ['scrap', 1]] },
+  { out: ['sword', 1],  cost: [['scrap', 4]] },
+  { out: ['axe', 1],    cost: [['scrap', 6]] },
+  { out: ['shield', 1], cost: [['scrap', 5]] },
 ];
 
 // ---- 怪物 ----

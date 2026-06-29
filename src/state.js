@@ -43,6 +43,15 @@ export class GameState {
     this.kills = 0;
     this.alive = true;
     this.won = false;
+    // 成长
+    this.level = 1;
+    this.xp = 0;
+    this.xpNext = 30;
+    this.pendingPerks = 0;     // 待分配的强化点
+    this.bossesDone = [];      // 已击败的 Boss（按已下降层数记录）
+    // 当前楼层房间（持久化以便存档续局）
+    this.currentRoom = null;
+    this.roomFloor = null;
   }
 
   // ---------- 初始化角色 ----------
@@ -107,7 +116,35 @@ export class GameState {
     if (it.heal) { const before = this.hp; this.hp = clamp(this.hp + it.heal, 0, this.maxHp); log.push(`生命 +${this.hp - before}`); }
     if (it.stamina) { const before = this.stamina; this.stamina = clamp(this.stamina + it.stamina, 0, this.maxStamina); log.push(`体力 +${this.stamina - before}`); }
     if (it.hunger) { const before = this.hunger; this.hunger = clamp(this.hunger + it.hunger, 0, 100); log.push(`饥饿 ${this.hunger - before}`); }
+    if (id === 'medkit' && this.poison > 0) { this.poison = 0; log.push('解毒'); }
     return { name: it.name, log };
+  }
+
+  // ---------- 成长 ----------
+  addXp(n) {
+    this.xp += n;
+    let ups = 0;
+    while (this.xp >= this.xpNext) {
+      this.xp -= this.xpNext;
+      this.level += 1;
+      this.pendingPerks += 1;
+      this.xpNext = Math.round(this.xpNext * 1.5);
+      ups += 1;
+    }
+    return ups;
+  }
+  applyPerk(id) {
+    if (this.pendingPerks <= 0) return false;
+    switch (id) {
+      case 'str': this.str += 2; break;
+      case 'acc': this.acc += 2; break;
+      case 'dex': this.dex += 2; break;
+      case 'hp': this.maxHp += 15; this.hp = clamp(this.hp + 15, 0, this.maxHp); break;
+      case 'sta': this.maxStamina += 15; this.stamina = clamp(this.stamina + 15, 0, this.maxStamina); break;
+      default: return false;
+    }
+    this.pendingPerks -= 1;
+    return true;
   }
 
   // ---------- 合成 ----------
@@ -189,6 +226,8 @@ export class GameState {
       floor: this.floor, descended: this.descended, day: this.day,
       weaponId: this.weaponId, armorId: this.armorId, inv: this.inv,
       poison: this.poison, kills: this.kills, alive: this.alive, won: this.won,
+      level: this.level, xp: this.xp, xpNext: this.xpNext, pendingPerks: this.pendingPerks,
+      bossesDone: this.bossesDone, currentRoom: this.currentRoom, roomFloor: this.roomFloor,
     };
   }
   fromJSON(d) { Object.assign(this, d); return this; }

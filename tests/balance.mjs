@@ -13,7 +13,8 @@ await new Promise(r => setTimeout(r, 800));
 const report = await p.evaluate((N) => {
   const S = window.__SKYHILL__;
   const { GameState, RNG, Data, CombatMath } = S;
-  const { ITEMS, MONSTERS, LOOT_TABLE, RARE_LOOT, BALANCE, roomWeightsFor, monsterPoolFor, RECIPES, CLASSES } = Data;
+  const { ITEMS, MONSTERS, LOOT_TABLE, RARE_LOOT, BALANCE, roomWeightsFor, monsterPoolFor, RECIPES, CLASSES, BOSS_FLOORS, TRADES } = Data;
+  const autoPerk = (g) => { while (g.pendingPerks > 0) g.applyPerk(g.maxHp < 115 ? 'hp' : (g.str < 8 ? 'str' : (g.dex < 7 ? 'dex' : 'acc'))); };
   const { scaleMonster, playerHitChance, monsterHitChance, playerDamage, monsterDamage } = CombatMath;
 
   const weaponAvg = id => { const w = ITEMS[id]; return w && w.type === 'weapon' ? (w.dmg[0] + w.dmg[1]) / 2 + (w.acc || 0) * 0.3 : 0; };
@@ -56,7 +57,7 @@ const report = await p.evaluate((N) => {
         if (g.hp <= 0) { g.die(); }
       }
     }
-    if (g.alive && mon.hp <= 0) { g.kills++; return { win: true }; }
+    if (g.alive && mon.hp <= 0) { g.kills++; g.addXp(mon.xp); return { win: true }; }
     return { dead: !g.alive };
   }
 
@@ -78,6 +79,7 @@ const report = await p.evaluate((N) => {
     // 装备最佳武器/护盾
     const bw = bestWeaponInInv(g); if (bw !== g.weaponId) g.equip(bw);
     if (!g.armorId && count(g, 'shield') > 0) g.equip('shield');
+    autoPerk(g);
     // 睡觉补体力（只有在有余粮、不会饿死时）
     if (g.stamina < g.maxStamina * 0.6 && (g.hunger < 70 || foodCount(g) > 0)) g.sleep();
   }
@@ -98,19 +100,31 @@ const report = await p.evaluate((N) => {
       // 下楼
       g.descend();
       if (g.won || !g.alive) break;
+      // 里程碑 Boss
+      const bossId = BOSS_FLOORS[g.descended];
+      if (bossId && !g.bossesDone.includes(g.descended)) {
+        const r = battle(g, bossId);
+        if (g.alive && r.win) {
+          g.bossesDone.push(g.descended);
+          give(g, rollRare(4)); g.addItem(RNG.pick(['sword', 'axe', 'greatsword', 'hammer']), 1);
+          autoPerk(g); const bw = bestWeaponInInv(g); if (bw !== g.weaponId) g.equip(bw);
+        }
+        continue;
+      }
       // 生成并处理房间
       const type = RNG.weighted(roomWeightsFor(g.descended));
       if (type === 'monster') {
         const r = battle(g, RNG.pick(monsterPoolFor(g.descended)));
-        if (g.alive && r.win) give(g, rollLoot(RNG.int(1, 2)));
+        if (g.alive && r.win) { give(g, rollLoot(RNG.int(1, 2))); autoPerk(g); }
         const bw = bestWeaponInInv(g); if (bw !== g.weaponId) g.equip(bw);
       } else if (type === 'loot') { g.spendStamina(BALANCE.searchStamina); give(g, rollLoot(RNG.int(2, 3))); }
       else if (type === 'empty') { g.spendStamina(BALANCE.searchStamina); if (RNG.chance(0.55)) give(g, rollLoot(1)); }
       else if (type === 'locked') { if (count(g, 'pipe') > 0 || g.weaponId === 'pipe') { g.spendStamina(6); give(g, rollRare(RNG.int(2, 3))); } }
       else if (type === 'special') {
-        const sub = RNG.weighted({ rest: 4, cache: 4, trap: 3 });
+        const sub = RNG.weighted({ rest: 4, cache: 4, trap: 3, trader: 3 });
         if (sub === 'rest') { g.hp = Math.min(g.maxHp, g.hp + Math.round(g.maxHp * 0.2)); g.stamina = Math.min(g.maxStamina, g.stamina + Math.round(g.maxStamina * 0.3)); }
         else if (sub === 'cache') give(g, rollRare(RNG.int(2, 4)));
+        else if (sub === 'trader') { while (count(g, 'scrap') >= 3 && count(g, 'medkit') < 3) { g.removeItem('scrap', 3); g.addItem('medkit', 1); } if (!g.armorId && count(g, 'shield') === 0 && count(g, 'scrap') >= 5) { g.removeItem('scrap', 5); g.addItem('shield', 1); g.equip('shield'); } }
         else { g.hp = Math.max(0, g.hp - RNG.int(6, 14)); g.stamina = Math.max(0, g.stamina - 8); if (g.hp <= 0) g.die(); }
       }
     }
