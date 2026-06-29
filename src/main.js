@@ -1,0 +1,31 @@
+// main.js — Phaser 游戏入口
+import { COLORS } from './ui.js';
+import { game } from './state.js';
+import { Boot } from './scenes/Boot.js';
+import { Menu } from './scenes/Menu.js';
+import { ClassSelect } from './scenes/ClassSelect.js';
+import { Base } from './scenes/Base.js';
+import { Explore } from './scenes/Explore.js';
+import { Combat } from './scenes/Combat.js';
+import { Inventory } from './scenes/Inventory.js';
+import { Craft } from './scenes/Craft.js';
+import { GameOver } from './scenes/GameOver.js';
+
+const config = {
+  type: Phaser.AUTO,
+  width: 960,
+  height: 600,
+  parent: 'game',
+  backgroundColor: COLORS.bg,
+  pixelArt: true,           // 像素素材最近邻缩放，保持锐利
+  roundPixels: true,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  scene: [Boot, Menu, ClassSelect, Base, Explore, Combat, Inventory, Craft, GameOver],
+};
+
+const phaserGame = new Phaser.Game(config);
+phaserGame.gameState = game; // 便于调试：window 上可访问
+window.__SKYHILL__ = { game, phaserGame };

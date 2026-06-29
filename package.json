@@ -1,0 +1,16 @@
+{
+  "name": "skyhill",
+  "version": "0.1.0",
+  "description": "天空之山 · SkyHill — 末世生存 Roguelike，纯 Web（Phaser 3）",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "serve": "python3 -m http.server 8080",
+    "test": "node tests/logic.mjs && node tests/smoke.mjs"
+  },
+  "keywords": ["game", "roguelike", "phaser", "skyhill"],
+  "license": "MIT",
+  "devDependencies": {
+    "playwright-core": "^1.61.1"
+  }
+}
