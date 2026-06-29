@@ -110,34 +110,22 @@ export function statBar(scene, x, y, w, label, color, opts = {}) {
   return { container: c, set, label: lbl, valueText: val };
 }
 
-// ---------- 程序化音效（WebAudio，无需素材）----------
+// ---------- 音效（委托给 audio.js 的 Sound 管理器）----------
+// 保持 SFX.xxx() 接口不变，各场景无需改动。
+import { Sound } from './audio.js';
 export const SFX = {
-  ctx: null, muted: false,
-  _ctx() {
-    if (this.muted) return null;
-    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-    return this.ctx;
-  },
-  _beep(freq, dur, type = 'square', vol = 0.06) {
-    const ctx = this._ctx(); if (!ctx) return;
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.value = vol;
-    o.connect(g); g.connect(ctx.destination);
-    const now = ctx.currentTime;
-    g.gain.setValueAtTime(vol, now);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-    o.start(now); o.stop(now + dur);
-  },
-  click() { this._beep(420, 0.06, 'square', 0.04); },
-  hit()   { this._beep(180, 0.10, 'sawtooth', 0.07); },
-  hurt()  { this._beep(110, 0.16, 'square', 0.07); },
-  heal()  { this._beep(660, 0.12, 'sine', 0.06); setTimeout(() => this._beep(880, 0.12, 'sine', 0.05), 90); },
-  loot()  { this._beep(740, 0.08, 'triangle', 0.05); setTimeout(() => this._beep(990, 0.09, 'triangle', 0.05), 80); },
-  die()   { this._beep(220, 0.3, 'sawtooth', 0.08); setTimeout(() => this._beep(140, 0.4, 'sawtooth', 0.08), 150); },
-  win()   { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this._beep(f, 0.18, 'triangle', 0.06), i * 130)); },
-  descend(){ this._beep(330, 0.10, 'sine', 0.05); },
+  get muted() { return Sound.muted; },
+  set muted(v) { Sound.setMuted(v); },
+  click()   { Sound.playSfx('click', 0.4); },
+  hit()     { Sound.playSfx('hit', 0.5); },
+  hurt()    { Sound.playSfx('hurt', 0.5); },
+  heal()    { Sound.playSfx('heal', 0.5); },
+  loot()    { Sound.playSfx('loot', 0.5); },
+  descend() { Sound.playSfx('descend', 0.6); },
+  levelup() { Sound.playSfx('levelup', 0.5); },
+  craftFail(){ Sound.playSfx('error', 0.5); },
+  win()     { Sound.winJingle(); },
+  die()     { Sound.loseJingle(); },
 };
 
 // 颜色数值 → CSS 字符串

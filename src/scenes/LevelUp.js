@@ -31,7 +31,7 @@ export class LevelUp extends Phaser.Scene {
 
   pick(id) {
     game.applyPerk(id);
-    SFX.heal();
+    SFX.levelup();
     game.save();
     if (game.pendingPerks > 0) this.render();
     else this.close();

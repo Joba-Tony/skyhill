@@ -53,7 +53,7 @@ export class Craft extends Phaser.Scene {
     const res = game.craft(r);
     if (!res) return;
     if (res.ok) { SFX.loot(); this.flash(`✔ 合成成功：${ITEMS[r.out[0]].name}`); }
-    else { SFX.hurt(); this.flash('✘ 合成失败，材料损耗了……'); }
+    else { SFX.craftFail(); this.flash('✘ 合成失败，材料损耗了……'); }
     game.save();
     this.render();
   }

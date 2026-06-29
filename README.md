@@ -31,6 +31,9 @@ npx serve .
 - **基地（顶层安全屋）**：睡觉恢复体力与少量 HP（但更饿）、在工作台/炉灶合成、整理背包，然后下楼探索。
 - **探索**：每层一个房间——空房 / 物资间 / 怪物 / 上锁房（需**铁管**撬锁）/ 特殊房（休息点 / 缓存 / 陷阱）。越深怪越强、稀有掉落越好。
 - **战斗（回合制）**：攻击 / 防御 / 用物品 / 逃跑。命中、伤害、闪避由属性与武器决定；部分怪附带**中毒**。
+- **成长**：击杀得经验，升级可选**永久强化**（力量/命中/敏捷/生命上限/体力上限）。
+- **里程碑 Boss**：第 67 / 34 / 2 层必出层主（强敌），击败掉落稀有装备与武器。
+- **流浪商人**：特殊房中可用材料**以物易物**换取装备与补给。
 - **生存压力**：行动消耗体力，时间推进增加饥饿；饥饿满值持续掉血、恢复减半；体力耗尽强行动会掉血。
 - **胜负**：抵达 1 层逃生 = 胜利；HP 归零或饿死 = 永久死亡（清档重开）。
 - **存档**：自动保存到浏览器 `localStorage`，可从主菜单「继续游戏」。
@@ -43,15 +46,21 @@ npx serve .
 index.html              入口（内置 Phaser，加载 ES Module）
 vendor/phaser.min.js    Phaser 3.80.1（本地内置）
 assets/tilemap.png      Kenney Tiny Dungeon 精灵表（CC0）
+assets/audio/sfx/       Kenney CC0 音效（.ogg）
+assets/audio/music/     可选外部 BGM（放入 bgm.ogg 即自动启用）
 src/
-  data.js               所有内容数据：精灵帧 / 职业 / 物品 / 怪物 / 配方 / 房间 / 平衡
-  state.js              游戏状态模型、背包/合成/下楼/睡觉逻辑、存档、RNG 与战斗数值
-  ui.js                 主题色、按钮/状态条/精灵/面板组件、WebAudio 程序化音效
-  hud.js                顶部状态栏（基地与探索共用）
-  scenes/               Boot / Menu / ClassSelect / Base / Explore / Combat / Inventory / Craft / GameOver
+  data.js               所有内容数据：精灵帧/职业/物品/怪物/配方/房间/平衡/强化/Boss/商人
+  state.js              游戏状态模型、背包/合成/下楼/睡觉/成长逻辑、存档、RNG、战斗数值
+  combat.js             战斗核心数值（纯函数，战斗场景与平衡模拟器共用）
+  ui.js                 主题色、按钮/状态条/精灵/面板组件、SFX 接口
+  audio.js              音频管理：Kenney 音效 + 程序化氛围 BGM + 外部曲目接口
+  hud.js                顶部状态栏（楼层/天数/HP/体力/饥饿/等级/经验）
+  scenes/               Boot / Menu / ClassSelect / Base / Explore / Combat
+                        Inventory / Craft / LevelUp / Shop / GameOver
 tests/
   logic.mjs             纯逻辑回归（合成/用药/下楼/通关/背包上限…）
   smoke.mjs             端到端冒烟：自动玩一整局并截图，捕获控制台/页面错误
+  balance.mjs           平衡模拟器：称职玩家 AI 跑大量整局，统计胜率/死因/深度
 ```
 
 ## 开发 / 测试
@@ -69,13 +78,19 @@ npm test               # 逻辑测试 + 端到端冒烟
 
 ## 致谢
 
-- 美术：**Kenney — Tiny Dungeon**（CC0），详见 [`assets/CREDITS.md`](assets/CREDITS.md)
+- 美术：**Kenney — Tiny Dungeon**（CC0）
+- 音效：**Kenney — Interface Sounds / RPG Audio / Impact Sounds / Music Jingles**（CC0）
 - 引擎：**Phaser 3**（MIT）
-- 音效：程序化合成（WebAudio）
+- 背景乐：程序化氛围（WebAudio）；可放入 `assets/audio/music/bgm.ogg` 替换为任意 CC0 曲目
+- 全部素材清单与许可见 [`assets/CREDITS.md`](assets/CREDITS.md)
 
-## 路线图（后续迭代）
+## 已实现
 
-- M5 美化：接入更多 CC0 美术与音效（BGM/打击感）、动画与转场
-- 更多房间类型（商人 NPC、剧情碎片）、Boss 战、技能/天赋成长
-- 更丰富的合成树与食物/烹饪系统、负重与道具稀有度
+部署到 GitHub Pages · 难度平衡（模拟器调优）· 升级天赋成长 · 里程碑 Boss · 流浪商人 · CC0 音效 + 氛围 BGM。
+
+## 路线图（后续可迭代）
+
+- 接入循环 BGM 正式曲目（CC0），更多动画与转场打磨
+- 剧情碎片 / 多结局、更多 Boss 与怪物技能（流血 / 破甲等）
+- 更丰富的合成树与食物 / 烹饪、负重与道具稀有度
 - 移动端触控适配与画面自适应

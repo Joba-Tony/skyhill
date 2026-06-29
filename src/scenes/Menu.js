@@ -1,5 +1,6 @@
 // Menu — 主菜单（标题 / 新游戏 / 继续 / 静音）
 import { COLORS, txt, button, sprite, SFX, hex } from '../ui.js';
+import { Sound } from '../audio.js';
 import { GameState, game } from '../state.js';
 import { FRAMES } from '../data.js';
 
@@ -9,6 +10,9 @@ export class Menu extends Phaser.Scene {
   create() {
     const W = this.scale.width, H = this.scale.height;
     this.cameras.main.setBackgroundColor(COLORS.bg);
+
+    // 首次交互后启动背景乐（浏览器需用户手势才能播放音频）
+    this.input.once('pointerdown', () => Sound.startBgm());
 
     // 背景：摩天楼剪影 + 渐变天空
     this.drawSkyline(W, H);
