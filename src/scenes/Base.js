@@ -86,7 +86,7 @@ export class Base extends Phaser.Scene {
     game.save();
     if (game.won) { this.scene.start('GameOver'); return; }
     if (!game.alive) { this.toGameOver(); return; }
-    this.scene.start('Explore');
+    this.scene.start('Field');
   }
 
   openCraft(station) { this.scene.pause(); this.scene.launch('Craft', { from: 'Base', station }); }

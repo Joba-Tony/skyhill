@@ -5,9 +5,9 @@
 
 > 纯 Web，零运行时外部依赖（Phaser 本地内置）。像素美术为 **Kenney Tiny Dungeon (CC0)**。
 
-| 主菜单 | 探索 | 战斗 |
+| 主菜单 | 横版探索 | 实时战斗 |
 |---|---|---|
-| ![menu](docs/screenshot_menu.png) | ![explore](docs/screenshot_explore.png) | ![combat](docs/screenshot_combat.png) |
+| ![menu](docs/screenshot_menu.png) | ![field](docs/screenshot_field.png) | ![combat](docs/screenshot_combat.png) |
 
 ## 运行
 
@@ -29,8 +29,9 @@ npx serve .
 
 - **选择职业**：保安（肉搏）/ 工程师（合成）/ 运动员（敏捷），属性与开局物资不同。
 - **基地（顶层安全屋）**：睡觉恢复体力与少量 HP（但更饿）、在工作台/炉灶合成、整理背包，然后下楼探索。
-- **探索**：每层一个房间——空房 / 物资间 / 怪物 / 上锁房（需**铁管**撬锁）/ 特殊房（休息点 / 缓存 / 陷阱）。越深怪越强、稀有掉落越好。
-- **战斗（回合制）**：攻击 / 防御 / 用物品 / 逃跑。命中、伤害、闪避由属性与武器决定；部分怪附带**中毒**。
+- **横版探索（2D 动作）**：每层是一条横向走廊，**走动**穿过，遇怪实时战斗、踩到物资自动拾取、走到右侧楼梯下楼、左侧梯子回基地。
+- **实时战斗**：走近怪物、攻击；命中/伤害/闪避由属性与武器决定，附带挥砍/受击/伤害跳字特效；部分怪**中毒**。
+- **操作**：`← →` 或 `A D` 移动，`J / 空格` 攻击，`E` 交互（下楼/回基地/撬箱/商人），`I` 背包；底部也有触屏按钮。
 - **成长**：击杀得经验，升级可选**永久强化**（力量/命中/敏捷/生命上限/体力上限）。
 - **里程碑 Boss**：第 67 / 34 / 2 层必出层主（强敌），击败掉落稀有装备与武器。
 - **流浪商人**：特殊房中可用材料**以物易物**换取装备与补给。
@@ -55,7 +56,7 @@ src/
   ui.js                 主题色、按钮/状态条/精灵/面板组件、SFX 接口
   audio.js              音频管理：Kenney 音效 + 程序化氛围 BGM + 外部曲目接口
   hud.js                顶部状态栏（楼层/天数/HP/体力/饥饿/等级/经验）
-  scenes/               Boot / Menu / ClassSelect / Base / Explore / Combat
+  scenes/               Boot / Menu / ClassSelect / Base / Field（横版动作）
                         Inventory / Craft / LevelUp / Shop / GameOver
 tests/
   logic.mjs             纯逻辑回归（合成/用药/下楼/通关/背包上限…）

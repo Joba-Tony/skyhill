@@ -7,8 +7,7 @@ import { Boot } from './scenes/Boot.js';
 import { Menu } from './scenes/Menu.js';
 import { ClassSelect } from './scenes/ClassSelect.js';
 import { Base } from './scenes/Base.js';
-import { Explore } from './scenes/Explore.js';
-import { Combat } from './scenes/Combat.js';
+import { Field } from './scenes/Field.js';
 import { Inventory } from './scenes/Inventory.js';
 import { Craft } from './scenes/Craft.js';
 import { LevelUp } from './scenes/LevelUp.js';
@@ -27,7 +26,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Boot, Menu, ClassSelect, Base, Explore, Combat, Inventory, Craft, LevelUp, Shop, GameOver],
+  scene: [Boot, Menu, ClassSelect, Base, Field, Inventory, Craft, LevelUp, Shop, GameOver],
 };
 
 const phaserGame = new Phaser.Game(config);
